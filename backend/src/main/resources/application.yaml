@@ -1,3 +1,40 @@
 spring:
   application:
     name: backend
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/fieldnotes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:1234}
+
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+server:
+  port: ${PORT:8085}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:fieldnotes-dev-secret-change-me-minimum-256-bit-long-string}
+    expiration-ms: 86400000   # 24 ghonta
+  upload:
+    dir: uploads
+    allowed-types: image/jpeg,image/png,image/jpg
