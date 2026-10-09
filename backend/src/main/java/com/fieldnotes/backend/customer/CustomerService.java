@@ -2,6 +2,7 @@ package com.fieldnotes.backend.customer;
 
 import com.fieldnotes.backend.customer.dto.CustomerRequest;
 import com.fieldnotes.backend.customer.dto.CustomerResponse;
+import com.fieldnotes.backend.note.FieldNoteRepository;
 import com.fieldnotes.backend.site.SiteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final SiteRepository siteRepository;
+    private final FieldNoteRepository noteRepository;
 
     @Transactional(readOnly = true)
     public List<CustomerResponse> list(Long userId) {
@@ -84,6 +86,7 @@ public class CustomerService {
 
 
         // Cascade: soft delete the customer's sites too, so they sync as deleted.
+        noteRepository.softDeleteByCustomer(id, now);
         siteRepository.softDeleteByCustomer(id, now);
 
         // TODO: once Site exists, soft delete this customer's sites (and their notes) here too.

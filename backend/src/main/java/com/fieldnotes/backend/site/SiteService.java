@@ -2,6 +2,7 @@ package com.fieldnotes.backend.site;
 
 import com.fieldnotes.backend.customer.Customer;
 import com.fieldnotes.backend.customer.CustomerRepository;
+import com.fieldnotes.backend.note.FieldNoteRepository;
 import com.fieldnotes.backend.site.dto.SiteRequest;
 import com.fieldnotes.backend.site.dto.SiteResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class SiteService {
 
     private final SiteRepository siteRepository;
     private final CustomerRepository customerRepository;
+    private final FieldNoteRepository noteRepository;
 
     @Transactional(readOnly = true)
     public List<SiteResponse> list(Long userId, String customerId) {
@@ -80,6 +82,9 @@ public class SiteService {
         Instant now = Instant.now();
         site.setDeletedAt(now);
         site.setUpdatedAt(now);
+
+        // Cascade: soft delete the site's notes too.
+        noteRepository.softDeleteBySite(id, now);
 
         // TODO: once FieldNote exists, soft delete this site's notes here too.
     }
