@@ -2,6 +2,7 @@ package com.fieldnotes.backend.customer;
 
 import com.fieldnotes.backend.customer.dto.CustomerRequest;
 import com.fieldnotes.backend.customer.dto.CustomerResponse;
+import com.fieldnotes.backend.site.SiteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final SiteRepository siteRepository;
 
     @Transactional(readOnly = true)
     public List<CustomerResponse> list(Long userId) {
@@ -78,6 +80,11 @@ public class CustomerService {
         Instant now = Instant.now();
         customer.setDeletedAt(now);
         customer.setUpdatedAt(now);
+
+
+
+        // Cascade: soft delete the customer's sites too, so they sync as deleted.
+        siteRepository.softDeleteByCustomer(id, now);
 
         // TODO: once Site exists, soft delete this customer's sites (and their notes) here too.
     }
