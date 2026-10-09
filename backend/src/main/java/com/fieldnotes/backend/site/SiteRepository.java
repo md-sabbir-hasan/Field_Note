@@ -33,8 +33,15 @@ public interface SiteRepository extends JpaRepository<Site, String> {
     // Cascade for customer soft delete. Only touches rows that are still active.
     @Modifying
     @Query("""
-            UPDATE Site s SET s.deletedAt = :now, s.updatedAt = :now
+            UPDATE Site s SET s.deletedAt = :now, s.updatedAt = :now, s.clientUpdatedAt = :now
             WHERE s.customer.id = :customerId AND s.deletedAt IS NULL
             """)
-    int softDeleteByCustomer(@Param("customerId") String customerId, @Param("now") Instant now);
+    void softDeleteByCustomer(@Param("customerId") String customerId, @Param("now") Instant now);
+
+
+    @Query("""
+        SELECT s FROM Site s JOIN FETCH s.customer c
+        WHERE c.userId = :userId AND s.updatedAt > :since
+        """)
+    List<Site> findChangedSince(@Param("userId") Long userId, @Param("since") Instant since);
 }

@@ -57,4 +57,7 @@ public class FieldNote {
     // Non-null means soft deleted.
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    @Column(name = "client_updated_at", nullable = false)
+    private Instant clientUpdatedAt;
 }

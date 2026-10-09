@@ -47,16 +47,25 @@ public interface FieldNoteRepository extends JpaRepository<FieldNote, String> {
     // Cascade helpers for site / customer soft delete.
     @Modifying
     @Query("""
-            UPDATE FieldNote n SET n.deletedAt = :now, n.updatedAt = :now
+            UPDATE FieldNote n SET n.deletedAt = :now, n.updatedAt = :now, n.clientUpdatedAt = :now
             WHERE n.site.id = :siteId AND n.deletedAt IS NULL
             """)
-    int softDeleteBySite(@Param("siteId") String siteId, @Param("now") Instant now);
+    void softDeleteBySite(@Param("siteId") String siteId, @Param("now") Instant now);
 
     @Modifying
     @Query("""
-            UPDATE FieldNote n SET n.deletedAt = :now, n.updatedAt = :now
+            UPDATE FieldNote n SET n.deletedAt = :now, n.updatedAt = :now, n.clientUpdatedAt = :now
             WHERE n.deletedAt IS NULL
               AND n.site.id IN (SELECT s.id FROM Site s WHERE s.customer.id = :customerId)
             """)
-    int softDeleteByCustomer(@Param("customerId") String customerId, @Param("now") Instant now);
+    void softDeleteByCustomer(@Param("customerId") String customerId, @Param("now") Instant now);
+
+
+    @Query("""
+        SELECT n FROM FieldNote n
+          JOIN FETCH n.site s
+          JOIN FETCH s.customer c
+        WHERE c.userId = :userId AND n.updatedAt > :since
+        """)
+    List<FieldNote> findChangedSince(@Param("userId") Long userId, @Param("since") Instant since);
 }

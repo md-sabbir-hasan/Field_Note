@@ -39,4 +39,7 @@ public class Customer {
     // Soft delete marker: non-null means the record is deleted.
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    @Column(name = "client_updated_at", nullable = false)
+    private Instant clientUpdatedAt;
 }

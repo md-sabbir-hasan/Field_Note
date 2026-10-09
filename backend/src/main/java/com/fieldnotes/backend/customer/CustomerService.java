@@ -53,6 +53,7 @@ public class CustomerService {
             customer.setId(id);
             customer.setUserId(userId);
             customer.setCreatedAt(now);
+            customer.setClientUpdatedAt(now);
         } else if (!customer.getUserId().equals(userId) || customer.getDeletedAt() != null) {
             // Same 404 for "not yours" and "deleted" so we never reveal other users' data.
             throw notFound();
@@ -82,6 +83,7 @@ public class CustomerService {
         Instant now = Instant.now();
         customer.setDeletedAt(now);
         customer.setUpdatedAt(now);
+        customer.setClientUpdatedAt(now);
 
 
 

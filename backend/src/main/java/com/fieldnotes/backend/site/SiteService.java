@@ -65,6 +65,7 @@ public class SiteService {
         site.setSiteName(request.siteName().trim());
         site.setAddress(request.address());
         site.setUpdatedAt(now);
+        site.setClientUpdatedAt(now);
 
         return SiteResponse.from(siteRepository.save(site));
     }
@@ -82,6 +83,7 @@ public class SiteService {
         Instant now = Instant.now();
         site.setDeletedAt(now);
         site.setUpdatedAt(now);
+        site.setClientUpdatedAt(now);
 
         // Cascade: soft delete the site's notes too.
         noteRepository.softDeleteBySite(id, now);

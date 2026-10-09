@@ -73,6 +73,7 @@ public class FieldNoteService {
         note.setNotedAt(request.notedAt());
         note.setStatus(request.status());
         note.setUpdatedAt(now);
+        note.setClientUpdatedAt(now);
 
         return NoteResponse.from(noteRepository.save(note));
     }
@@ -90,6 +91,7 @@ public class FieldNoteService {
         Instant now = Instant.now();
         note.setDeletedAt(now);
         note.setUpdatedAt(now);
+        note.setClientUpdatedAt(now);
     }
 
     private static void validateUuid(String id) {
