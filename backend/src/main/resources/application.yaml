@@ -37,4 +37,3 @@ app:
     expiration-ms: 86400000   # 24 ghonta
   upload:
     dir: uploads
-    allowed-types: image/jpeg,image/png,image/jpg

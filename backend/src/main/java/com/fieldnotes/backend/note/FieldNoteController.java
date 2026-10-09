@@ -8,6 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.fieldnotes.backend.storage.PhotoStorage;
+import org.springframework.core.io.Resource;
+import org.springframework.http.CacheControl;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @RestController
@@ -42,5 +49,30 @@ public class FieldNoteController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@AuthenticationPrincipal Long userId, @PathVariable String id) {
         noteService.delete(userId, id);
+    }
+
+
+    @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public NoteResponse uploadPhoto(@AuthenticationPrincipal Long userId,
+                                    @PathVariable String id,
+                                    @RequestParam("file") MultipartFile file) {
+        return noteService.uploadPhoto(userId, id, file);
+    }
+
+    @GetMapping("/{id}/photo")
+    public ResponseEntity<Resource> getPhoto(@AuthenticationPrincipal Long userId,
+                                             @PathVariable String id) {
+        Resource photo = noteService.getPhoto(userId, id);
+        return ResponseEntity.ok()
+                .contentType(PhotoStorage.mediaTypeOf(photo.getFilename()))
+                // Private: it is user data, and a new upload gets a new file name anyway.
+                .cacheControl(CacheControl.noCache().cachePrivate())
+                .body(photo);
+    }
+
+    @DeleteMapping("/{id}/photo")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePhoto(@AuthenticationPrincipal Long userId, @PathVariable String id) {
+        noteService.deletePhoto(userId, id);
     }
 }
