@@ -1,15 +1,19 @@
 import 'package:field_notes/core/storage/photo_store.dart';
+import 'package:field_notes/core/sync/local_change_notifier.dart';
 import 'package:uuid/uuid.dart';
-
 import 'note.dart';
 import 'note_local_data_source.dart';
 import 'note_status.dart';
 
 class NoteRepository {
-  NoteRepository(this._local, this._photoStore);
+  NoteRepository(this._local, this._photoStore, [this._changes]);
 
   final NoteLocalDataSource _local;
   final PhotoStore _photoStore;
+
+  // Told after every local write, so sync can start soon after.
+  final LocalChangeNotifier? _changes;
+
   static const _uuid = Uuid();
 
   Future<List<Note>> list(
@@ -56,8 +60,11 @@ class NoteRepository {
       localPhotoPath: storedPhoto,
       clientUpdatedAt: DateTime.now().toUtc(),
     );
+    _changes?.notify();
   }
 
-  Future<void> delete(int userId, String id) =>
-      _local.softDelete(userId: userId, id: id, now: DateTime.now().toUtc());
+  Future<void> delete(int userId, String id) async {
+    await _local.softDelete(userId: userId, id: id, now: DateTime.now().toUtc());
+    _changes?.notify();
+  }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:field_notes/features/sync/ui/sync_status_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -149,6 +150,7 @@ class _NoteListPageState extends State<NoteListPage> {
           appBar: AppBar(
             title: const Text('Field Notes'),
             actions: [
+              const SyncStatusButton(),
               IconButton(
                 tooltip: 'Filter by site',
                 icon: Icon(filter.siteId == null ? Icons.filter_list : Icons.filter_list_alt),

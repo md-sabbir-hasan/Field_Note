@@ -3,14 +3,16 @@ import 'package:field_notes/core/database/app_database.dart';
 import 'package:field_notes/core/network/api_client.dart';
 import 'package:field_notes/core/network/api_exception.dart';
 import 'package:field_notes/core/network/token_storage.dart';
+import 'package:field_notes/core/sync/sync_state_store.dart';
 import 'auth_user.dart';
 
 class AuthRepository {
-  AuthRepository(this._api, this._tokenStorage, this._database);
+  AuthRepository(this._api, this._tokenStorage, this._database, this._syncState);
 
   final ApiClient _api;
   final TokenStorage _tokenStorage;
   final AppDatabase _database;
+  final SyncStateStore _syncState;
 
   /// Returns the stored user if a token exists. Works offline: no server call.
   Future<AuthUser?> restoreSession() async {
@@ -38,6 +40,7 @@ class AuthRepository {
   Future<void> logout() async {
     await _tokenStorage.clear();
     await _database.clearAll();
+    await _syncState.clear();
   }
 
   /// Drops only the token. Local data stays so offline work is not lost.
@@ -60,6 +63,7 @@ class AuthRepository {
       final previousId = await _tokenStorage.userId;
       if (previousId != null && previousId != user.id) {
         await _database.clearAll();
+        await _syncState.clear();
       }
 
       await _tokenStorage.save(

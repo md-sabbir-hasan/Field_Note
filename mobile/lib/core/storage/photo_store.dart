@@ -24,4 +24,13 @@ class PhotoStore {
     await File(sourcePath).copy(target);
     return target;
   }
+
+
+  /// Saves bytes downloaded from the server under a random name.
+  Future<String> saveBytes(List<int> bytes, {String extension = '.jpg'}) async {
+    final dir = await _directory();
+    final target = p.join(dir.path, '${_uuid.v4()}${extension.isEmpty ? '.jpg' : extension}');
+    await File(target).writeAsBytes(bytes, flush: true);
+    return target;
+  }
 }
